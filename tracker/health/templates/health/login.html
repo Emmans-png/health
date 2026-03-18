@@ -1,7 +1,7 @@
 {% load static %}
 <style>
     body{
-        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'images/auth.jpg' %}");
+        background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url("{% static 'images/home.jpg' %}");
         background-size: cover;
         background-position: center;
         background-attachment: fixed;
@@ -27,10 +27,21 @@
 
 
 <body id="logPage">
+
+
 <div class="container" style="display:flex; justify-content:center; align-items:center; height:80vh;">
-    <div class="card" style="width:350px; padding:50px; color: #ffff;>
-        <h2 style="margin-bottom:20px; color: #ffff;>Sign In</h2>
-        
+    <div class="card" style="width:350px; padding:50px; color: #ffff;">
+    
+        <h2 style="color: #000000;">Sign In</h2>
+        <div style="border-left: 5px solid #E50914; padding-left: 15px; margin-bottom: 40px;">
+    <h1 style="color: white; font-size: 2.2rem; font-weight: 700; margin: 0; letter-spacing: 2px;">
+        CALORIE <span style="color: #E50914;">TRACKER</span>
+    </h1>
+    <p style="color: #666; font-size: 14px; margin: 0;">Log. Track. Conquer.</p>
+</div>
+        <h2 style="margin-bottom:20px; color: #ffff;">Sign In</h2>
+
+  
         <form method="POST"> {% csrf_token %}
             {{ form.as_p }}
             

@@ -7,39 +7,50 @@ from .forms import CalorieForm
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 
-
 @login_required(login_url='login')
-
 def tracker_dashboard(request, update_id=None):
-    # Fetch data for display (Same as your Admin list)
+    # 1. Fetch data for Today's Feed
     today_logs = CalorieLog.objects.filter(user=request.user, date=date.today()).order_by('-id')
-    all_history = CalorieLog.objects.filter(user=request.user).order_by('-date', '-id')
+    total_calories = today_logs.aggregate(Sum('calories'))['calories__sum'] or 0
 
-    # Handle the "ADD" and "UPDATE" Actions
+    # 2. Fetch Grouped History (Calculates total per day for the sidebar)
+    history_summary = (
+        CalorieLog.objects.filter(user=request.user)
+        .values('date')
+        .annotate(day_total=Sum('calories'))
+        .order_by('-date')
+    )
+    
+    # 3. Fetch All Logs (To list individual meals under the daily totals)
+    all_logs = CalorieLog.objects.filter(user=request.user).order_by('-date', '-id')
+
+    # 4. Handle "ADD" and "UPDATE" Actions
     instance = get_object_or_404(CalorieLog, id=update_id, user=request.user) if update_id else None
     
     if request.method == 'POST':
         form = CalorieForm(request.POST, instance=instance)
         if form.is_valid():
             new_log = form.save(commit=False)
-            new_log.user = request.user # This links the food to your account
-            new_log.save()             # This sends it to the Admin table
+            new_log.user = request.user 
+            new_log.save()             
             return redirect('dashboard')
     else:
         form = CalorieForm(instance=instance)
 
+    # 5. Pass everything to the template
     return render(request, 'health/home.html', {
         'logs': today_logs,
-        'history': all_history,
+        'total': total_calories,
+        'history_summary': history_summary, # Used for the day headers
+        'all_logs': all_logs,               # Used for the meal lists
         'form': form,
-        'editing': instance
+        'editing': instance,
     })
 
 @login_required
 def delete_log(request, pk):
     get_object_or_404(CalorieLog, pk=pk, user=request.user).delete()
     return redirect('dashboard')
-
 
 def signup(request):
     if request.method == 'POST':
@@ -51,4 +62,3 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'health/signup.html', {'form': form})
-
