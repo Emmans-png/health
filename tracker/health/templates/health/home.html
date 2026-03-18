@@ -1,4 +1,5 @@
 {% load static %}
+{% include 'health/navbar.html' %}
 <style>
     /* Global Netflix Dark Theme */
     body { 
@@ -209,7 +210,7 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function openDrawer() { document.getElementById("sideDrawer").classList.add("active"); document.getElementById("overlay").style.display = "block"; }
     function closeDrawer() { document.getElementById("sideDrawer").classList.remove("active"); document.getElementById("overlay").style.display = "none"; }
@@ -230,7 +231,7 @@
         typingTimer = setTimeout(() => {
             const query = foodInput.value;
             if (query.length > 2) {
-                fetch(`https://api.calorieninjas.com{query}`, {
+                fetch(`https://api.calorieninjas.com/v1/nutrition?query=${encodeURIComponent(query)}`, {
                     headers: { 'X-Api-Key': 'qdMlWymr887Ln0Hi0CRJLTT51mJZCa3cXju0ozyQ' }
                 })
                 .then(res => res.json())
@@ -247,25 +248,27 @@
     });
 
     // CHART LOGIC: DAILY TOTALS
-    const ctx = document.getElementById('mealChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: [{% for day in history_summary reversed %}"{{ day.date|date:'M d' }}",{% endfor %}],
-            datasets: [{
-                label: 'Total kcal',
-                data: [{% for day in history_summary reversed %}{{ day.day_total }},{% endfor %}],
-                backgroundColor: '#E50914',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            maintainAspectRatio: false,
-            scales: {
-                y: { beginAtZero: true, grid: { color: '#222' }, ticks: { color: '#666', font: { size: 10 } } },
-                x: { grid: { display: false }, ticks: { color: '#fff' } }
+    if (typeof Chart !== 'undefined') {
+        const ctx = document.getElementById('mealChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [{% for day in history_summary reversed %}"{{ day.date|date:'M d' }}",{% endfor %}],
+                datasets: [{
+                    label: 'Total kcal',
+                    data: [{% for day in history_summary reversed %}{{ day.day_total }},{% endfor %}],
+                    backgroundColor: '#E50914',
+                    borderRadius: 4
+                }]
             },
-            plugins: { legend: { display: false } }
-        }
-    });
+            options: {
+                maintainAspectRatio: false,
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#222' }, ticks: { color: '#666', font: { size: 10 } } },
+                    x: { grid: { display: false }, ticks: { color: '#fff' } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    }
 </script>

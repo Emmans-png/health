@@ -62,3 +62,7 @@ def signup(request):
     else:
         form = UserCreationForm()
     return render(request, 'health/signup.html', {'form': form})
+
+
+def products(request):
+    return render(request, 'health/products.html')

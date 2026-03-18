@@ -9,4 +9,6 @@ urlpatterns = [
     path('home/', views.tracker_dashboard, name='dashboard'),
     path('edit/<int:update_id>/', views.tracker_dashboard, name='edit_mode'),
     path('delete/<int:pk>/', views.delete_log, name='delete'),
+    path('products/', views.products, name='products'),
+    
 ]
