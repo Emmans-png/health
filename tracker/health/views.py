@@ -66,3 +66,28 @@ def signup(request):
 
 def products(request):
     return render(request, 'health/products.html')
+
+def contact(request):
+    return render(request, 'health/contacts.html')
+
+def about(request):
+    return render(request, 'health/about.html')
+
+
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt # Only for testing; better to use CSRF tokens in production
+def initiate_stk_push(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        phone = data.get('phone')
+        amount = data.get('amount')
+        
+        # This is where your Daraja Python logic goes.
+        # For now, we return a success message to stop the error.
+        print(f"Requesting {amount} KES from {phone}")
+        
+        return JsonResponse({"status": "Success", "message": "STK Push Initiated"})
+    return JsonResponse({"status": "Error", "message": "Invalid Request"}, status=400)

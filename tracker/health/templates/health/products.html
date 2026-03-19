@@ -145,7 +145,7 @@
                     <span class="product-tag">Protein & Recovery</span>
                     <h3 class="product-name">Lean Muscle Pro</h3>
                     <p class="product-desc">The purest whey isolate for post-workout recovery. Zero sugar, high absorption.</p>
-                    <button class="btn-buy">GET STARTED</button>
+                    <button class="btn-buy" onclick="pay(1, 'Lean Muscle Pro')">Purchase</button>
                 </div>
             </div>
 
@@ -156,7 +156,7 @@
                     <span class="product-tag">Hardware</span>
                     <h3 class="product-name">SyncScale 2.0</h3>
                     <p class="product-desc">Smart body composition scale that syncs directly with your CalorieTracker dashboard.</p>
-                    <button class="btn-buy">VIEW SPECS</button>
+                    <button class="btn-buy" onclick="pay(1, 'SyncScale 2.0')">Purchase</button>
                 </div>
             </div>
 
@@ -167,12 +167,53 @@
                     <span class="product-tag">Wellness</span>
                     <h3 class="product-name">Daily Vitality</h3>
                     <p class="product-desc">A complete daily multivitamin pack tailored for active individuals tracking their macros.</p>
-                    <button class="btn-buy">SUBSCRIBE</button>
+                    <button class="btn-buy" onclick="pay(1, 'Daily Vitality Subscription')">Purchase</button>
                 </div>
             </div>
 
         </div>
     </div>
 
+    <script>
+        function pay(amount, productName) {
+            const phoneNumber = prompt(`Enter M-Pesa Number for ${productName} (2547XXXXXXXX):`);
+            
+            if (phoneNumber) {
+                // Find the button that was clicked to show a loading state
+                const btn = event.target;
+                const originalText = btn.innerText;
+                btn.innerText = "PROCESSING...";
+                btn.disabled = true;
+                btn.style.background = "#564d4d";
+
+                fetch('/stk-push/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        phone: phoneNumber,
+                        amount: amount,
+                        product: productName
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert("STK Push Sent! Please enter your M-Pesa PIN on your phone.");
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert("Something went wrong. Please check your backend connection.");
+                })
+                .finally(() => {
+                    // Reset button state
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    btn.style.background = "#E50914";
+                });
+            }
+        }
+    </script>
+
 </body>
-</html>

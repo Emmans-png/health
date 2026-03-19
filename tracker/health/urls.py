@@ -10,5 +10,8 @@ urlpatterns = [
     path('edit/<int:update_id>/', views.tracker_dashboard, name='edit_mode'),
     path('delete/<int:pk>/', views.delete_log, name='delete'),
     path('products/', views.products, name='products'),
-    
+    path('contact/', views.contact, name='contact'),
+    path('about/', views.about, name='about'),
+    path('stk-push/', views.initiate_stk_push, name='stk_push'),
 ]
+
